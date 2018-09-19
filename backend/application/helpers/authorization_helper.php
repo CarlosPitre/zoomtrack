@@ -24,7 +24,7 @@ class Authorization
 
     public static function tokenIsExist($headers)
     {
-        return (array_key_exists('Authorization', $headers)
-            && !empty($headers['Authorization']));
+        return (array_key_exists('Token', $headers)
+            && !empty($headers['Token']));
     }
 }

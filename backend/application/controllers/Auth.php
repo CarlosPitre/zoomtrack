@@ -8,7 +8,7 @@ class Auth extends REST_Controller {
 	public function __construct()
 	{
 		parent::__construct();
-		$this->load->model('Usuarios_model');
+		$this->load->model('Users_model');
 	}
 
 	public function login_post()
@@ -20,7 +20,7 @@ class Auth extends REST_Controller {
 			'password' => sha1($password),
 			'state' => true
  		);
- 		$user = $this->Usuarios_model->login($datos);
+ 		$user = $this->Users_model->login($datos);
  		if ($user) {
  			$tokenData = array();
  			$tokenData['id'] = $user->id;
