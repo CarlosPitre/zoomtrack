@@ -1,0 +1,46 @@
+<div class="content">
+  <div class="box">
+    <div class="col">
+      <div class="text-center">
+        <img src="../../../assets/img/angular.png" alt="" height="100px">
+        <h4>¡Registrate y crea tus noticias!</h4>
+      </div>
+      <hr>
+      <div class="container">
+        <form action="" [formGroup]="registerForm" (ngSubmit)="register()">
+          <div class="form-group">
+            <input type="text" class="form-control" placeholder="Nombres" formControlName="name" [ngClass]="{ 'is-invalid': submitted && f.name.errors }">
+            <div *ngIf="submitted && f.name.errors" class="invalid-feedback">
+              <div *ngIf="f.name.errors.required">El nombre es requerido</div>
+              <div *ngIf="f.name.errors.minlength">No puede tener menos de 4 caracteres</div>
+            </div>
+          </div>
+          <div class="form-group">
+            <input type="text" class="form-control" placeholder="Username" formControlName="username" [ngClass]="{ 'is-invalid': submitted && f.username.errors }">
+            <div *ngIf="submitted && f.username.errors" class="invalid-feedback">
+              <div *ngIf="f.username.errors.required">El username es requerido</div>
+              <div *ngIf="f.username.errors.minlength">No puede tener menos de 4 caracteres</div>
+            </div>
+          </div>
+          <div class="form-group">
+            <input type="email" class="form-control" placeholder="Email" formControlName="email"  [ngClass]="{ 'is-invalid': submitted && f.email.errors }">
+            <div *ngIf="submitted && f.email.errors" class="invalid-feedback">
+              <div *ngIf="f.email.errors.required">Email es requerido</div>
+              <div *ngIf="f.email.errors.email">El correo electrónico debe ser una dirección de correo electrónico válida</div>
+            </div>
+          </div>
+          <div class="form-group">
+            <input type="password" class="form-control" placeholder="Contraseña" formControlName="password" [ngClass]="{ 'is-invalid': submitted && f.password.errors }">
+            <div *ngIf="submitted && f.password.errors" class="invalid-feedback">
+              <div *ngIf="f.password.errors.required">La contraseña es requerida</div>
+              <div *ngIf="f.password.errors.minlength">No puede tener menos de 4 caracteres</div>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-primary btn-block" >Enviar Datos</button>
+        </form>
+      </div>
+      <hr>
+    </div>
+
+  </div>
+</div>

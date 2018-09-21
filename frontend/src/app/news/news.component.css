@@ -1,0 +1,36 @@
+#taglist {
+  display: inline;
+  list-style: none;
+  padding: 0px;
+  text-align: center;
+}
+
+#taglist li {
+
+  margin: 0;
+  padding: 0;
+  display: inline;
+  font-size: 11px;
+
+}
+
+#taglist li:after {
+  content: ", ";
+}
+
+#taglist li:last-child:after {
+  content: "";
+}
+
+.multiline {
+  display: block;
+  display: -webkit-box;
+  max-width: 400px;
+  height: 109.2px;
+  margin: 0 auto;
+  line-height: 1.4;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

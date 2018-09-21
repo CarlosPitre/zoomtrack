@@ -150,34 +150,19 @@ class NewsCtrl extends REST_Controller {
 
 	public function news_get($init, $final)
 	{
-		$headers = $this->input->request_headers();
-		if (Authorization::tokenIsExist($headers)) {
-            $token = Authorization::validateToken($headers['Token']);
-            if ($token != false) {
-                $respuesta = $this->list_news($init, $final);
-                $code = REST_Controller::HTTP_OK;
-            }else{
-            	$respuesta["mensaje"] = "invalid";
-            	$code = REST_Controller::HTTP_FORBIDDEN;
-            }
-        }else{
-        	$respuesta["mensaje"] = "No Tienes Acceso este servicio.";
-        	$code = REST_Controller::HTTP_FORBIDDEN;
-        }
-        $this->set_response($respuesta, $code);
-	}
-
-	public function list_news($init, $final)
-	{
 		$response = $this->News_model->list_news($init, $final);
+		foreach ($response["datos"] as $key => $new) {
+			$new->tags = $this->News_model->tags_new($new->id);
+		}
 		if ($response['status'] == true) {
 			$respuesta['status'] = true;
-			$respuesta['datos'] = $response['datos'];
+			$respuesta['news'] = $response['datos'];
 		}else{
 			$respuesta['status'] = false;
 			$respuesta['mensaje'] =  $response['mensaje'];
 		}
-		return $respuesta;
+		$code = REST_Controller::HTTP_OK;
+        $this->set_response($respuesta, $code);
 	}
 
 

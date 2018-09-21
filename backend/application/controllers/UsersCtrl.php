@@ -23,7 +23,7 @@ class UsersCtrl extends REST_Controller {
 		$password = $this->post('password');
 		if (is_null($name) || is_null($username) || is_null($email) || is_null($password)) {
 			$respuesta['status'] = false;
-			$respuesta['mensaje'] = "Datos incompletos. Por favor verifica la información";
+			$respuesta['message'] = "Datos incompletos. Por favor verifica la información";
 		}else{
 			$datos = array(
 				'name' => $name, 
@@ -35,12 +35,16 @@ class UsersCtrl extends REST_Controller {
 			);
 			$response = $this->Users_model->save_users($datos);
 			if ($response['status'] == true) {
+				$tokenData = array();
+ 				$tokenData['id'] = $response['id'];
+ 				$respuesta['token'] = Authorization::generateToken($tokenData);
 				$respuesta['status'] = true;
 				$respuesta['id'] = $response['id'];
-				$respuesta['mensaje'] = "Datos Guardados Correctamente";
+				$respuesta['profile_id'] = '2';
+				$respuesta['message'] = "Datos Guardados Correctamente";
 			}else{
 				$respuesta['status'] = false;
-				$respuesta['mensaje'] =  $response['mensaje'];
+				$respuesta['message'] =  $response['message'];
 			}
 		}
 		$code = REST_Controller::HTTP_OK;
@@ -60,11 +64,11 @@ class UsersCtrl extends REST_Controller {
                 $respuesta = $this->update_user();
                 $code = REST_Controller::HTTP_OK;
             }else{
-            	$respuesta["mensaje"] = "invalid";
+            	$respuesta["message"] = "invalid";
             	$code = REST_Controller::HTTP_FORBIDDEN;
             }
         }else{
-        	$respuesta["mensaje"] = "No Tienes Acceso este servicio.";
+        	$respuesta["message"] = "No Tienes Acceso este servicio.";
         	$code = REST_Controller::HTTP_FORBIDDEN;
         }
         $this->set_response($respuesta, $code);
@@ -76,26 +80,24 @@ class UsersCtrl extends REST_Controller {
 		$name = $this->put('name');
 		$username = $this->put('username');
 		$email = $this->put('email');
-		$password = $this->put('password');
-		if (is_null($name) || is_null($username) || is_null($email) || is_null($password)) {
+		if (is_null($name) || is_null($username) || is_null($email)) {
 			$respuesta['status'] = false;
-			$respuesta['mensaje'] = "Datos incompletos. Por favor verifica la información";
+			$respuesta['message'] = "Datos incompletos. Por favor verifica la información";
 		}else{
 			$datos = array(
 				'name' => $name, 
 				'username' => $username,
 				'username' => $username,
-				'email' => $email,
-				'password' => sha1($password),
+				'email' => $email
 			);
 			$response = $this->Users_model->update_users($datos, $id);
 
 			if ($response['status'] == true) {
 				$respuesta['status'] = true;
-				$respuesta['mensaje'] = "Datos Guardados Correctamente";
+				$respuesta['message'] = "Datos Guardados Correctamente";
 			}else{
 				$respuesta['status'] = false;
-				$respuesta['mensaje'] =  $response['mensaje'];
+				$respuesta['message'] =  $response['message'];
 			}
 		}
 		return $respuesta;
@@ -114,11 +116,11 @@ class UsersCtrl extends REST_Controller {
                 $respuesta = $this->delete_user($id);
                 $code = REST_Controller::HTTP_OK;
             }else{
-            	$respuesta["mensaje"] = "invalid";
+            	$respuesta["message"] = "invalid";
             	$code = REST_Controller::HTTP_FORBIDDEN;
             }
         }else{
-        	$respuesta["mensaje"] = "No Tienes Acceso este servicio.";
+        	$respuesta["message"] = "No Tienes Acceso este servicio.";
         	$code = REST_Controller::HTTP_FORBIDDEN;
         }
         $this->set_response($respuesta, $code);
@@ -129,10 +131,10 @@ class UsersCtrl extends REST_Controller {
 		$response = $this->Users_model->delete_users($id);
 		if ($response['status'] == true) {
 			$respuesta['status'] = true;
-			$respuesta['mensaje'] = "Datos Eliminados Correctamente";
+			$respuesta['message'] = "Datos Eliminados Correctamente";
 		}else{
 			$respuesta['status'] = false;
-			$respuesta['mensaje'] =  $response['mensaje'];
+			$respuesta['message'] =  $response['message'];
 		}
 		return $respuesta;
 	}
@@ -150,11 +152,11 @@ class UsersCtrl extends REST_Controller {
                 $respuesta = $this->list_users($init, $final);
                 $code = REST_Controller::HTTP_OK;
             }else{
-            	$respuesta["mensaje"] = "invalid";
+            	$respuesta["message"] = "invalid";
             	$code = REST_Controller::HTTP_FORBIDDEN;
             }
         }else{
-        	$respuesta["mensaje"] = "No Tienes Acceso este servicio.";
+        	$respuesta["message"] = "No Tienes Acceso este servicio.";
         	$code = REST_Controller::HTTP_FORBIDDEN;
         }
         $this->set_response($respuesta, $code);
@@ -164,11 +166,26 @@ class UsersCtrl extends REST_Controller {
 	{
 		$response = $this->Users_model->list_users($init, $final);
 		if ($response['status'] == true) {
+			$totalPages = ceil((($this->Users_model->count_users())/$final));
+			$inicial = 0;
+			$pages = [];
+			for ($i=0; $i < $totalPages; $i++) { 
+				$pages[] = array(
+					'page' => strval($i + 1),
+					'init' => strval($inicial)
+				);
+				$inicial = $inicial + $final;
+			}
+
+			
 			$respuesta['status'] = true;
-			$respuesta['datos'] = $response['datos'];
+			$respuesta['count'] = $this->Users_model->count_users();
+			$respuesta['pages'] = $pages;
+			$respuesta['users'] = $response['datos'];
+
 		}else{
 			$respuesta['status'] = false;
-			$respuesta['mensaje'] =  $response['mensaje'];
+			$respuesta['message'] =  $response['message'];
 		}
 		return $respuesta;
 	}
@@ -185,11 +202,11 @@ class UsersCtrl extends REST_Controller {
                 $respuesta = $this->changeState_user();
                 $code = REST_Controller::HTTP_OK;
             }else{
-            	$respuesta["mensaje"] = "invalid";
+            	$respuesta["message"] = "invalid";
             	$code = REST_Controller::HTTP_FORBIDDEN;
             }
         }else{
-        	$respuesta["mensaje"] = "No Tienes Acceso este servicio.";
+        	$respuesta["message"] = "No Tienes Acceso este servicio.";
         	$code = REST_Controller::HTTP_FORBIDDEN;
         }
         $this->set_response($respuesta, $code);
@@ -206,10 +223,10 @@ class UsersCtrl extends REST_Controller {
 
 		if ($response['status'] == true) {
 			$respuesta['status'] = true;
-			$respuesta['mensaje'] = "Datos Guardados Correctamente";
+			$respuesta['message'] = "Datos Guardados Correctamente";
 		}else{
 			$respuesta['status'] = false;
-			$respuesta['mensaje'] =  $response['mensaje'];
+			$respuesta['message'] =  $response['message'];
 		};
 		return $respuesta;
 	}

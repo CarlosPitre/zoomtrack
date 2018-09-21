@@ -6,7 +6,7 @@ $route['default_controller'] = 'welcome';
 $route['404_override'] = '';
 $route['translate_uri_dashes'] = FALSE;
 
-$route['app/login'] = 'Auth/login';
+$route['app/users/login'] = 'Auth/login';
 $route['app/users'] = 'UsersCtrl/users';
 $route['app/users/(:num)'] = 'UsersCtrl/users/$1';
 $route['app/users/limit/(:num)/(:num)'] = 'UsersCtrl/users/$1/$2';

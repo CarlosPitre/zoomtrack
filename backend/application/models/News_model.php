@@ -49,7 +49,7 @@ class News_model extends CI_Model {
 
 	public function list_news($init, $final)
 	{	
-		$query = $this->db->select('n.id, n.title, n.body, users.name')
+		$query = $this->db->select('n.id, n.title, n.body, u.name as user')
 							->from('news n')
 							->join('users u', 'u.id = n.users_id', 'inner')
 							->limit($final, $init)
@@ -59,6 +59,24 @@ class News_model extends CI_Model {
 		if ($error['code'] == 0) {
 			$response['status'] = true;
 			$response['datos'] = $query->result();
+		}else{
+			$response['status'] = false;
+			$response['mensaje'] = $error['message'];
+		}
+		return $response;
+	}
+
+	public function tags_new($news_id)
+	{
+		$query = $this->db->select('t.name')
+							->from('tags_news tn')
+							->join('tags t', 't.id = tn.tags_id', 'inner')
+							->where('tn.news_id', $news_id)
+							->get();
+
+		$error = $this->db->error();
+		if ($error['code'] == 0) {
+			$response = $query->result();
 		}else{
 			$response['status'] = false;
 			$response['mensaje'] = $error['message'];

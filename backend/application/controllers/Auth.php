@@ -13,10 +13,10 @@ class Auth extends REST_Controller {
 
 	public function login_post()
 	{
-		$username = $this->post('username');
+		$email = $this->post('email');
 		$password = $this->post('password');
 		$datos = array(
-			'username' => $username,
+			'email' => $email,
 			'password' => sha1($password),
 			'state' => true
  		);
@@ -25,10 +25,14 @@ class Auth extends REST_Controller {
  			$tokenData = array();
  			$tokenData['id'] = $user->id;
  			$respuesta['token'] = Authorization::generateToken($tokenData);
+ 			$respuesta['id'] = $user->id;
+ 			$respuesta['profile_id'] = $user->profile_id;
  			$respuesta["user"] = $user;
+ 			$respuesta["status"] = true;
  			$code = REST_Controller::HTTP_OK;
  		}else{
- 			$respuesta["mensaje"] = "Datos incorrectos.Por favor verfica lo campos.";
+ 			$respuesta["status"] = false;
+ 			$respuesta["message"] = "Datos incorrectos.Por favor verfica lo campos.";
  			$code = REST_Controller::HTTP_OK;
  		}
  		$this->set_response($respuesta, $code);

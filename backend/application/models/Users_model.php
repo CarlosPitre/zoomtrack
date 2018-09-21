@@ -22,7 +22,7 @@ class Users_model extends CI_Model {
 			$response['id'] = $this->db->insert_id();
 		}else{
 			$response['status'] = false;
-			$response['mensaje'] = $error['message'];
+			$response['message'] = $error['message'];
 		}
 		return $response;
 	}
@@ -37,7 +37,7 @@ class Users_model extends CI_Model {
 			$response['status'] = true;
 		}else{
 			$response['status'] = false;
-			$response['mensaje'] = $error['message'];
+			$response['message'] = $error['message'];
 		}
 		return $response;
 	}
@@ -52,16 +52,15 @@ class Users_model extends CI_Model {
 			$response['status'] = true;
 		}else{
 			$response['status'] = false;
-			$response['mensaje'] = $error['message'];
+			$response['message'] = $error['message'];
 		}
 		return $response;
 	}
 
 	public function list_users($init, $final)
 	{	
-		$query = $this->db->select('id, name, username, email, profile_id')
+		$query = $this->db->select('id, name, username, email, profile_id, state')
 							->from('users')
-							->where('state', true)
 							->limit( $final, $init)
 							->get();
 
@@ -71,9 +70,17 @@ class Users_model extends CI_Model {
 			$response['datos'] = $query->result();
 		}else{
 			$response['status'] = false;
-			$response['mensaje'] = $error['message'];
+			$response['message'] = $error['message'];
 		}
 		return $response;
+	}
+
+	public function count_users()
+	{
+		$query = $this->db->select('COUNT(*) as total')
+							->from('users')
+							->get();
+		return $query->row()->total;
 	}
 
 
