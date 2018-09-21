@@ -1,5 +1,6 @@
 import {New} from '../news/new';
 import {User} from '../users/user';
+import {Tag} from "../tags/tag";
 export class Answers {
   public status: boolean;
   public message: string;
@@ -13,4 +14,5 @@ export class Answers {
   public user: User;
   public news: New[];
   public users: User[];
+  public tags: Tag[];
 }

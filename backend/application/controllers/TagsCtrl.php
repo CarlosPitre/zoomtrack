@@ -21,11 +21,11 @@ class TagsCtrl extends REST_Controller {
                 $respuesta = $this->save_tag();
                 $code = REST_Controller::HTTP_OK;
             }else{
-            	$respuesta["mensaje"] = "invalid";
+            	$respuesta["message"] = "invalid";
             	$code = REST_Controller::HTTP_FORBIDDEN;
             }
         }else{
-        	$respuesta["mensaje"] = "No Tienes Acceso este servicio.";
+        	$respuesta["message"] = "No Tienes Acceso este servicio.";
         	$code = REST_Controller::HTTP_FORBIDDEN;
         }
         $this->set_response($respuesta, $code);
@@ -36,7 +36,7 @@ class TagsCtrl extends REST_Controller {
 		$name = $this->post('name');
 		if (is_null($name)) {
 			$respuesta['status'] = false;
-			$respuesta['mensaje'] = "Datos incompletos. Por favor verifica la información";
+			$respuesta['message'] = "Datos incompletos. Por favor verifica la información";
 		}else{
 			$datos = array(
 				'name' => $name,
@@ -45,10 +45,10 @@ class TagsCtrl extends REST_Controller {
 			if ($response['status'] == true) {
 				$respuesta['status'] = true;
 				$respuesta['id'] = $response['id'];
-				$respuesta['mensaje'] = "Datos Guardados Correctamente";
+				$respuesta['message'] = "Datos Guardados Correctamente";
 			}else{
 				$respuesta['status'] = false;
-				$respuesta['mensaje'] =  $response['mensaje'];
+				$respuesta['message'] =  $response['message'];
 			}
 		}
 		return $respuesta;
@@ -63,11 +63,11 @@ class TagsCtrl extends REST_Controller {
                 $respuesta = $this->update_tag();
                 $code = REST_Controller::HTTP_OK;
             }else{
-            	$respuesta["mensaje"] = "invalid";
+            	$respuesta["message"] = "invalid";
             	$code = REST_Controller::HTTP_FORBIDDEN;
             }
         }else{
-        	$respuesta["mensaje"] = "No Tienes Acceso este servicio.";
+        	$respuesta["message"] = "No Tienes Acceso este servicio.";
         	$code = REST_Controller::HTTP_FORBIDDEN;
         }
         $this->set_response($respuesta, $code);
@@ -79,7 +79,7 @@ class TagsCtrl extends REST_Controller {
 		$name = $this->put('name');
 		if (is_null($name)) {
 			$respuesta['status'] = false;
-			$respuesta['mensaje'] = "Datos incompletos. Por favor verifica la información";
+			$respuesta['message'] = "Datos incompletos. Por favor verifica la información";
 		}else{
 			$datos = array(
 				'name' => $name
@@ -88,10 +88,10 @@ class TagsCtrl extends REST_Controller {
 
 			if ($response['status'] == true) {
 				$respuesta['status'] = true;
-				$respuesta['mensaje'] = "Datos Guardados Correctamente";
+				$respuesta['message'] = "Datos Guardados Correctamente";
 			}else{
 				$respuesta['status'] = false;
-				$respuesta['mensaje'] =  $response['mensaje'];
+				$respuesta['message'] =  $response['message'];
 			}
 		}
 		return $respuesta;
@@ -110,11 +110,11 @@ class TagsCtrl extends REST_Controller {
                 $respuesta = $this->delete_tag($id);
                 $code = REST_Controller::HTTP_OK;
             }else{
-            	$respuesta["mensaje"] = "invalid";
+            	$respuesta["message"] = "invalid";
             	$code = REST_Controller::HTTP_FORBIDDEN;
             }
         }else{
-        	$respuesta["mensaje"] = "No Tienes Acceso este servicio.";
+        	$respuesta["message"] = "No Tienes Acceso este servicio.";
         	$code = REST_Controller::HTTP_FORBIDDEN;
         }
         $this->set_response($respuesta, $code);
@@ -125,10 +125,10 @@ class TagsCtrl extends REST_Controller {
 		$response = $this->Tags_model->delete_tags($id);
 		if ($response['status'] == true) {
 			$respuesta['status'] = true;
-			$respuesta['mensaje'] = "Datos Eliminados Correctamente";
+			$respuesta['message'] = "Datos Eliminados Correctamente";
 		}else{
 			$respuesta['status'] = false;
-			$respuesta['mensaje'] =  $response['mensaje'];
+			$respuesta['message'] =  $response['message'];
 		}
 		return $respuesta;
 	}
@@ -146,11 +146,11 @@ class TagsCtrl extends REST_Controller {
                 $respuesta = $this->list_tags($init, $final);
                 $code = REST_Controller::HTTP_OK;
             }else{
-            	$respuesta["mensaje"] = "invalid";
+            	$respuesta["message"] = "invalid";
             	$code = REST_Controller::HTTP_FORBIDDEN;
             }
         }else{
-        	$respuesta["mensaje"] = "No Tienes Acceso este servicio.";
+        	$respuesta["message"] = "No Tienes Acceso este servicio.";
         	$code = REST_Controller::HTTP_FORBIDDEN;
         }
         $this->set_response($respuesta, $code);
@@ -160,11 +160,24 @@ class TagsCtrl extends REST_Controller {
 	{
 		$response = $this->Tags_model->list_tags($init, $final);
 		if ($response['status'] == true) {
+			$totalPages = ceil((($this->Tags_model->total())/$final));
+			$inicial = 0;
+			$pages = [];
+			for ($i=0; $i < $totalPages; $i++) { 
+				$pages[] = array(
+					'page' => strval($i + 1),
+					'init' => strval($inicial)
+				);
+				$inicial = $inicial + $final;
+			}
+
 			$respuesta['status'] = true;
-			$respuesta['datos'] = $response['datos'];
+			$respuesta['count'] = $this->Tags_model->total();
+			$respuesta['pages'] = $pages;
+			$respuesta['tags'] = $response['datos'];
 		}else{
 			$respuesta['status'] = false;
-			$respuesta['mensaje'] =  $response['mensaje'];
+			$respuesta['message'] =  $response['message'];
 		}
 		return $respuesta;
 	}

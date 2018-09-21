@@ -12,6 +12,7 @@ import swal from 'sweetalert2';
   styleUrls: ['./users.component.css']
 })
 export class UsersComponent implements OnInit {
+
   users: User[];
   pages: [{
     page: number,
@@ -25,9 +26,11 @@ export class UsersComponent implements OnInit {
     name: ['', [Validators.minLength(4), Validators.required]],
     username: ['', [Validators.minLength(4), Validators.required]],
     email: ['', [Validators.email, Validators.required]],
+    password: ['', [Validators.minLength(4), Validators.required]],
   });
   user: User;
   submitted = false;
+  createUser: boolean;
 
   constructor(private userService: UserService, private fb: FormBuilder, private modalService: NgbModal) {
     this.init = 0;
@@ -42,12 +45,18 @@ export class UsersComponent implements OnInit {
     this.getUser(this.init, this.userForms.value.final);
   }
 
+  get f() {
+    return this.userForms.controls;
+  }
+
+  // evento utilizado en el onchange del select de items
   changeItem () {
     this.getUser(this.init, this.userForms.value.final);
   }
 
-  open(user: User, content) {
-    console.log(user);
+  // open modal para editar user
+  editUser(user: User, content, createUser) {
+    this.createUser = createUser;
     this.userForms.controls['id'].setValue(user.id);
     this.userForms.controls['name'].setValue(user.name);
     this.userForms.controls['username'].setValue(user.username);
@@ -57,8 +66,19 @@ export class UsersComponent implements OnInit {
     });
   }
 
-  get f() { return this.userForms.controls; }
+  // open modal para crear user
+  newUser(content, createUser) {
+    this.createUser = createUser;
+    this.userForms.controls['id'].setValue('');
+    this.userForms.controls['name'].setValue('');
+    this.userForms.controls['username'].setValue('');
+    this.userForms.controls['email'].setValue('');
+    this.modalService.open(content, {ariaLabelledBy: 'modal-basic-title'}).result.then((result) => {
+    }, (reason) => {
+    });
+  }
 
+  // listado de usuarios
   getUser (init, final) {
     this.userService.getUsers(init, final).then((result: Answers) => {
       if (result.status) {
@@ -70,6 +90,7 @@ export class UsersComponent implements OnInit {
     });
   }
 
+  // editar usuario
   update() {
     this.submitted = true;
     console.log(this.userForms);
@@ -87,6 +108,7 @@ export class UsersComponent implements OnInit {
     });
   }
 
+  // eliminar usuario
   delete(id) {
     swal({
       title: 'Estás seguro?',
@@ -111,6 +133,7 @@ export class UsersComponent implements OnInit {
     });
   }
 
+  // cambiar el estado del usuario
   changeState(user) {
     let mensaje = '';
     console.log(user.state);
@@ -146,4 +169,23 @@ export class UsersComponent implements OnInit {
       }
     });
   }
+
+  // registrar un nuevo usuario
+  create() {
+    this.submitted = true;
+    console.log(this.userForms);
+    if (this.userForms.invalid) {
+      return;
+    }
+    this.userService.register(this.userForms.value).then((result: Answers) => {
+      if (result.status) {
+        this.getUser(this.init, this.userForms.value.final);
+        swal('Registro exitoso...', result.message, 'success');
+        this.modalService.dismissAll();
+      } else {
+        swal('Tenemos problemas...', result.message, 'error');
+      }
+    });
+  }
+
 }

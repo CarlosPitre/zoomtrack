@@ -13,7 +13,7 @@ class Tags_model extends CI_Model {
 			$response['id'] = $this->db->insert_id();
 		}else{
 			$response['status'] = false;
-			$response['mensaje'] = $error['message'];
+			$response['message'] = $error['message'];
 		}
 		return $response;
 	}
@@ -28,7 +28,7 @@ class Tags_model extends CI_Model {
 			$response['status'] = true;
 		}else{
 			$response['status'] = false;
-			$response['mensaje'] = $error['message'];
+			$response['message'] = $error['message'];
 		}
 		return $response;
 	}
@@ -43,7 +43,7 @@ class Tags_model extends CI_Model {
 			$response['status'] = true;
 		}else{
 			$response['status'] = false;
-			$response['mensaje'] = $error['message'];
+			$response['message'] = $error['message'];
 		}
 		return $response;
 	}
@@ -61,9 +61,17 @@ class Tags_model extends CI_Model {
 			$response['datos'] = $query->result();
 		}else{
 			$response['status'] = false;
-			$response['mensaje'] = $error['message'];
+			$response['message'] = $error['message'];
 		}
 		return $response;
+	}
+
+	public function total()
+	{
+		$query = $this->db->select('COUNT(*) as total')
+							->from('tags')
+							->get();
+		return $query->row()->total;
 	}
 
 }

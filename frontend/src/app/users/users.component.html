@@ -5,17 +5,11 @@
   </div>
   <hr>
   <div class="row">
-    <div class="col-4">
-      <form action="" [formGroup]="userForms">
-        <div class="form-group">
-          <input type="text" class="form-control" placeholder="Filtra por cualquier campo" formControlName="filter">
-        </div>
-      </form>
-    </div>
+
     <div class="col-3">
-      <button class="btn btn-primary btn-block" >Agregar Nuevo Usuario</button>
+      <button class="btn btn-primary btn-block" (click)="newUser(content, true)" >Agregar Nuevo Usuario</button>
     </div>
-    <div class="col-2 offset-3">
+    <div class="col-2 offset-7">
       <form action="" [formGroup]="userForms" class="form-inline">
         <div class="form-group">
           <div class="col">
@@ -34,6 +28,7 @@
       </form>
     </div>
   </div>
+  <br>
   <div class="row">
     <div class="table-responsive">
       <table class="table table-bordered table-striped">
@@ -49,13 +44,13 @@
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let user of users" [ngClass]="{'bg-warning' : user.state == 0}">
+          <tr *ngFor="let user of users" [ngClass]="{'table-active' : user.state == 0}">
           <th scope="row">{{user.id}}</th>
           <td>{{user.name}}</td>
           <td>{{user.username}}</td>
           <td>{{user.email}}</td>
           <td class="text-center">
-            <button class='btn btn-sm btn-warning' (click)="open(user, content)">
+            <button class='btn btn-sm btn-warning' (click)="editUser(user, content, false)">
               <i class="fa fa-edit"></i>
             </button>
           </td>
@@ -89,13 +84,13 @@
 
 <ng-template #content let-modal>
   <div class="modal-header">
-    <h4 class="modal-title" id="modal-basic-title">Profile update</h4>
+    <h4 class="modal-title" id="modal-basic-title">Información</h4>
     <button type="button" class="close" aria-label="Close" (click)="modal.dismiss()">
       <span aria-hidden="true">&times;</span>
     </button>
   </div>
   <div class="modal-body">
-    <form action="" [formGroup]="userForms" (ngSubmit)="update()">
+    <form action="" [formGroup]="userForms" >
       <div class="form-group">
         <input type="text" class="form-control" placeholder="Nombres" formControlName="name" [ngClass]="{ 'is-invalid': submitted && f.name.errors }">
         <div *ngIf="submitted && f.name.errors" class="invalid-feedback">
@@ -117,7 +112,15 @@
           <div *ngIf="f.email.errors.email">El correo electrónico debe ser una dirección de correo electrónico válida</div>
         </div>
       </div>
-      <button type="submit" class="btn btn-primary btn-block" >Enviar Datos</button>
+      <div class="form-group" *ngIf="createUser">
+        <input type="password" class="form-control" placeholder="Contraseña" formControlName="password" [ngClass]="{ 'is-invalid': submitted && f.password.errors }">
+        <div *ngIf="submitted && f.password.errors" class="invalid-feedback">
+          <div *ngIf="f.password.errors.required">La contraseña es requerida</div>
+          <div *ngIf="f.password.errors.minlength">No puede tener menos de 4 caracteres</div>
+        </div>
+      </div>
+      <button type="submit" class="btn btn-primary btn-block" (click)="update()" *ngIf="!createUser">Modificar Datos</button>
+      <button type="submit" class="btn btn-primary btn-block" (click)="create()" *ngIf="createUser">Registrar Datos</button>
     </form>
   </div>
   <div class="modal-footer">
